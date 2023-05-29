@@ -12,15 +12,15 @@ namespace BankAuth.Context
 
         }
 
-        public DbSet<User> Users { get; set; }
         public DbSet<UserReg> UserRegs { get; set; }
         public DbSet<CustomerAccountInfo> AccInfo { get; set; }
+        
+
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>()
-                
-                .ToTable("users");
+            
 
             modelBuilder.Entity<UserReg>()
 
@@ -29,6 +29,10 @@ namespace BankAuth.Context
             modelBuilder.Entity<CustomerAccountInfo>()
 
                 .ToTable("customer_accountinfo");
+            
+
+
+
         }
 
 

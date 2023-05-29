@@ -3,6 +3,7 @@ using BankAuth.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankAuth.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230528181000_v239")]
+    partial class v239
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,6 +80,64 @@ namespace BankAuth.Migrations
                     b.HasKey("CustomerAccountId");
 
                     b.ToTable("customer_accountinfo", (string)null);
+                });
+
+            modelBuilder.Entity("BankAuth.Models.CustomerAccountInfoAlpha", b =>
+                {
+                    b.Property<int>("CustomerAccountIds")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerAccountIds"));
+
+                    b.Property<string>("AadharNums")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AccountNums")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Addressss")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContactNums")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DOBs")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Emails")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmpTypes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Genders")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OccupationAddresss")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OccupationNames")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrganizationAddresss")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OrganizationNames")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PanNums")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserNames")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WorkExps")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CustomerAccountIds");
+
+                    b.ToTable("customer_accountAlpha", (string)null);
                 });
 
             modelBuilder.Entity("BankAuth.Models.UserReg", b =>

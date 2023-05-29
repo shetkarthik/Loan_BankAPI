@@ -13,6 +13,7 @@ using System.Text;
 using BankAuth.Helpers;
 using SendGrid.Helpers.Mail;
 using Microsoft.AspNetCore.Identity;
+using System.Numerics;
 
 namespace BankAuth.Controllers
 {
@@ -33,8 +34,9 @@ namespace BankAuth.Controllers
 
         public class UserObj
         {
-            public UserReg ?userReg { get; set; }
-            public CustomerAccountInfo ?custObj { get; set; }
+            public UserReg? userReg { get; set; }
+            public CustomerAccountInfo? custObj { get; set; }
+            
         }
 
 
@@ -135,16 +137,25 @@ namespace BankAuth.Controllers
                 return BadRequest();
             }
 
-            if (await CheckPhoneExistAsync(userObj.custObj.ContactNum))
-               return BadRequest(new { Message = "ContactNum doesnt exists" });
+              if (await CheckPhoneExistAsync(userObj.custObj.ContactNum))
+              {
+              return BadRequest(new { Message = $"ContactNum doesnt exists {userObj.custObj.ContactNum}" });
+              }
 
-            if (await CheckAccountNumberExistAsync(userObj.custObj.AccountNum))
-                return BadRequest(new { Message = "AccountNum doesnt exists" });
 
-            if (await CheckEmailExistAsync(userObj.custObj.Email))
-                return BadRequest(new { Message = "Email doesnt  exists" });
+                if (await CheckAccountNumberExistAsync(userObj.custObj.AccountNum))
+                {
 
-            if (await CheckCustomerIdExistAsync(userObj.userReg.CustomerId))
+                   return BadRequest(new { Message = "AccountNum doesnt exists" });
+                }
+
+                if (await CheckEmailExistAsync(userObj.custObj.Email))
+                {
+                   return BadRequest(new { Message = "Email doesnt  exists" });
+
+                }
+
+                if (await CheckCustomerIdExistAsync(userObj.userReg.CustomerId))
                 return BadRequest(new { Message = "CustomerId already exists" });
 
             var pass = CheckPasswordStrength(userObj.userReg.Password);
@@ -179,108 +190,125 @@ namespace BankAuth.Controllers
                 AccountNum = userObj.custObj.AccountNum,
                 CustomerId = userObj.userReg.CustomerId,
 
-             };
+            };
 
-           
+
             await _authContext.UserRegs.AddAsync(newuser);
             await _authContext.SaveChangesAsync();
 
             return Ok(new { Message = "Register Success" });
+
         }
 
-        private async Task<bool> CheckPhoneExistAsync(string? phone) => await _authContext.AccInfo.AnyAsync(x => x.ContactNum != phone);
+        private async Task<bool> CheckPhoneExistAsync(string phone)
+        {
+            return !(await _authContext.AccInfo.AnyAsync(x => x.ContactNum == phone));
+        }
+
+        
 
 
         private async Task<bool> CheckCustomerIdExistAsync(string customer_id)
+        {
+            return await _authContext.UserRegs.AnyAsync(x => x.CustomerId == customer_id);
+        }
 
-         => await _authContext.UserRegs.AnyAsync(x => x.CustomerId == customer_id);
+             
 
 
         private async Task<bool> CheckEmailExistAsync(string email)
 
-         => await _authContext.AccInfo.AnyAsync(x => x.Email != email);
+        {
+            return !(await _authContext.AccInfo.AnyAsync(x => x.Email == email));
+        }
+
+           
 
         private async Task<bool> CheckAccountNumberExistAsync(string accountnum)
-
-          => await _authContext.AccInfo.AnyAsync(x => x.AccountNum != accountnum);
-
-        private string CheckPasswordStrength(string password)
         {
-            StringBuilder sb = new StringBuilder();
-
-            if (password.Length < 8)
-            {
-                sb.Append("Password should have minimum of 8 characters" + Environment.NewLine);
-            }
-            if (!(Regex.IsMatch(password, "[a-z]") && Regex.IsMatch(password, "[A-Z]") && Regex.IsMatch(password, "[0-9]")))
-            {
-                sb.Append("Password should be Alphanumeric" + Environment.NewLine);
-            }
-            if (!Regex.IsMatch(password, "[<,>,@,!,#,$,%,^,&,*,(,),_,+,\\[,\\],{,},?,:,;,|,',\\,.,/,~,-,=]"))
-            {
-                sb.Append("Password should contain special characters" + Environment.NewLine);
-            }
-
-            return sb.ToString();
-
+            return !(await _authContext.AccInfo.AnyAsync(x => x.AccountNum != accountnum));
         }
 
-        private string CheckAccountNumberStrength(string accountnum)
-        {
-            StringBuilder sb = new StringBuilder();
 
-            if (accountnum.Length < 12 || accountnum.Length > 12)
+
+            private string CheckPasswordStrength(string password)
             {
-                sb.Append("AccountNumber must have 12 digits" + Environment.NewLine);
+                StringBuilder sb = new StringBuilder();
+
+                if (password.Length < 8)
+                {
+                    sb.Append("Password should have minimum of 8 characters" + Environment.NewLine);
+                }
+                if (!(Regex.IsMatch(password, "[a-z]") && Regex.IsMatch(password, "[A-Z]") && Regex.IsMatch(password, "[0-9]")))
+                {
+                    sb.Append("Password should be Alphanumeric" + Environment.NewLine);
+                }
+                if (!Regex.IsMatch(password, "[<,>,@,!,#,$,%,^,&,*,(,),_,+,\\[,\\],{,},?,:,;,|,',\\,.,/,~,-,=]"))
+                {
+                    sb.Append("Password should contain special characters" + Environment.NewLine);
+                }
+
+                return sb.ToString();
+
             }
 
-            return sb.ToString();
-
-        }
-
-        private string CheckContactStrength(string contactNum)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            if (contactNum.Length < 10 || contactNum.Length > 10)
+            private string CheckAccountNumberStrength(string accountnum)
             {
-                sb.Append("Phonenumber must have 10 digits" + Environment.NewLine);
+                StringBuilder sb = new StringBuilder();
+
+                if (accountnum.Length < 12 || accountnum.Length > 12)
+                {
+                    sb.Append("AccountNumber must have 12 digits" + Environment.NewLine);
+                }
+
+                return sb.ToString();
+
             }
 
-            return sb.ToString();
-
-        }
-
-        private string CheckCustomerIdStrength(string customerid)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            if (customerid.Length < 8)
+            private string CheckContactStrength(string contactNum)
             {
-                sb.Append("CustomerId should have minimum of 8 characters" + Environment.NewLine);
-            }
-            if (!(Regex.IsMatch(customerid, "[a-z]") && Regex.IsMatch(customerid, "[A-Z]") && Regex.IsMatch(customerid, "[0-9]")))
-            {
-                sb.Append("CustomerId should be Alphanumeric" + Environment.NewLine);
-            }
-            if (!Regex.IsMatch(customerid, "[<,>,@,!,#,$,%,^,&,*,(,),_,+,\\[,\\],{,},?,:,;,|,',\\,.,/,~,-,=]"))
-            {
-                sb.Append("CustomerId should contain special characters" + Environment.NewLine);
+                StringBuilder sb = new StringBuilder();
+
+                if (contactNum.Length < 10 || contactNum.Length > 10)
+                {
+                    sb.Append("Phonenumber must have 10 digits" + Environment.NewLine);
+                }
+
+                return sb.ToString();
+
             }
 
-            return sb.ToString();
+            private string CheckCustomerIdStrength(string customerid)
+            {
+                StringBuilder sb = new StringBuilder();
 
-        }
+                if (customerid.Length < 8)
+                {
+                    sb.Append("CustomerId should have minimum of 8 characters" + Environment.NewLine);
+                }
+                if (!(Regex.IsMatch(customerid, "[a-z]") && Regex.IsMatch(customerid, "[A-Z]") && Regex.IsMatch(customerid, "[0-9]")))
+                {
+                    sb.Append("CustomerId should be Alphanumeric" + Environment.NewLine);
+                }
+                if (!Regex.IsMatch(customerid, "[<,>,@,!,#,$,%,^,&,*,(,),_,+,\\[,\\],{,},?,:,;,|,',\\,.,/,~,-,=]"))
+                {
+                    sb.Append("CustomerId should contain special characters" + Environment.NewLine);
+                }
 
-        private string GeneratedTokenForTwoF()
-        {
-            Random rnd = new Random();
+                return sb.ToString();
 
-            var token_generated = rnd.Next(100000, 999999);
+            }
+
+            private string GeneratedTokenForTwoF()
+            {
+                Random rnd = new Random();
+
+                var token_generated = rnd.Next(100000, 999999);
 
 
-            return token_generated.ToString();
-        }
+                return token_generated.ToString();
+            }
+        
 
         [HttpGet("getByAccountNum")]
         public async Task<IActionResult> getUserByAccountNumber(string accountnum)
@@ -305,8 +333,7 @@ namespace BankAuth.Controllers
                 var identity = new ClaimsIdentity(new Claim[]
                 {
                 new Claim(ClaimTypes.Role, user.Role),
-                //new Claim(ClaimTypes.Name,),
-                //new Claim(ClaimTypes.Email,user.custObj.Email),
+                
                 new Claim(ClaimTypes.Actor,user.AccountNum),
                 new Claim(ClaimTypes.NameIdentifier,user.CustomerId)
                 });
