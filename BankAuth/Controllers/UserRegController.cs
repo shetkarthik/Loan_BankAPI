@@ -139,24 +139,22 @@ namespace BankAuth.Controllers
 
               if (await CheckPhoneExistAsync(userObj.custObj.ContactNum))
               {
-              return BadRequest(new { Message = $"ContactNum doesnt exists {userObj.custObj.ContactNum}" });
+              return BadRequest(new { Message = $"ContactNum doesn't exists" });
               }
 
 
-                if (await CheckAccountNumberExistAsync(userObj.custObj.AccountNum))
-                {
+              if (await CheckAccountNumberExistAsync(userObj.custObj.AccountNum))
+              {
+              return BadRequest(new { Message = "AccountNum doesn't exists" });
+              }
 
-                   return BadRequest(new { Message = "AccountNum doesnt exists" });
-                }
+              if (await CheckEmailExistAsync(userObj.custObj.Email))
+              {
+              return BadRequest(new { Message = "Email doesnt  exists" });
 
-                if (await CheckEmailExistAsync(userObj.custObj.Email))
-                {
-                   return BadRequest(new { Message = "Email doesnt  exists" });
+              }
 
-                }
-
-                if (await CheckCustomerIdExistAsync(userObj.userReg.CustomerId))
-                return BadRequest(new { Message = "CustomerId already exists" });
+              
 
             var pass = CheckPasswordStrength(userObj.userReg.Password);
 
@@ -181,22 +179,42 @@ namespace BankAuth.Controllers
                 return BadRequest(new { Message = contactnumber.ToString() });
             }
 
-            var newuser = new UserReg
+
+            bool isAssociated = await ArePhoneAndEmailAccountAssociated(userObj.custObj.ContactNum, userObj.custObj.Email, userObj.custObj.AccountNum);
+
+            if (isAssociated)
             {
-                Password = PasswordHasher.HashPassword(userObj.userReg.Password),
-                //Password = userObj.userReg.Password,
-                Role = "user",
-                Token = "",
-                AccountNum = userObj.custObj.AccountNum,
-                CustomerId = userObj.userReg.CustomerId,
+                if (await CheckAccountNumberInUserReg(userObj.custObj.AccountNum))
+                    return BadRequest(new { Message = "Account already exists Please Login" });
 
-            };
+                if (await CheckCustomerIdExistAsync(userObj.userReg.CustomerId))
+                    return BadRequest(new { Message = "CustomerId already exists" });
 
 
-            await _authContext.UserRegs.AddAsync(newuser);
-            await _authContext.SaveChangesAsync();
 
-            return Ok(new { Message = "Register Success" });
+                var newuser = new UserReg
+                {
+                    Password = PasswordHasher.HashPassword(userObj.userReg.Password),
+                    //Password = userObj.userReg.Password,
+                    Role = "user",
+                    Token = "",
+                    AccountNum = userObj.custObj.AccountNum,
+                    CustomerId = userObj.userReg.CustomerId,
+
+                };
+
+
+                await _authContext.UserRegs.AddAsync(newuser);
+                await _authContext.SaveChangesAsync();
+
+                return Ok(new { Message = "Register Success" });
+            }
+            else
+            {
+                return NotFound("The phone number, email, and account number do not match or belong to different users.");
+            }
+
+           
 
         }
 
@@ -205,7 +223,12 @@ namespace BankAuth.Controllers
             return !(await _authContext.AccInfo.AnyAsync(x => x.ContactNum == phone));
         }
 
-        
+        private async Task<bool> CheckAccountNumberInUserReg(string regaccount)
+        {
+            return (await _authContext.UserRegs.AnyAsync(x => x.AccountNum == regaccount));
+        }
+
+
 
 
         private async Task<bool> CheckCustomerIdExistAsync(string customer_id)
@@ -229,6 +252,24 @@ namespace BankAuth.Controllers
             return !(await _authContext.AccInfo.AnyAsync(x => x.AccountNum != accountnum));
         }
 
+        private async Task<bool> ArePhoneAndEmailAccountAssociated(string phone, string email,string AccountNum)
+        {
+            var phoneUser = await _authContext.AccInfo.SingleOrDefaultAsync(x => x.ContactNum == phone);
+            var emailUser = await _authContext.AccInfo.SingleOrDefaultAsync(x => x.Email == email);
+            var accountUser = await _authContext.AccInfo.SingleOrDefaultAsync(x => x.AccountNum == AccountNum);
+
+            
+            if (phoneUser != null && emailUser != null && accountUser != null)
+            {
+                // Compare the user IDs
+                if (phoneUser.CustomerAccountId == emailUser.CustomerAccountId && phoneUser.CustomerAccountId == accountUser.CustomerAccountId)
+                {
+
+                    return true;
+                }
+            }
+            return false;
+        }
 
 
             private string CheckPasswordStrength(string password)
