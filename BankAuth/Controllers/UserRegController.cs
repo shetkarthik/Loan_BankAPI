@@ -184,11 +184,14 @@ namespace BankAuth.Controllers
 
             if (isAssociated)
             {
-                if (await CheckAccountNumberInUserReg(userObj.custObj.AccountNum))
-                    return BadRequest(new { Message = "Account already exists Please Login" });
-
                 if (await CheckCustomerIdExistAsync(userObj.userReg.CustomerId))
                     return BadRequest(new { Message = "CustomerId already exists" });
+
+                if (await CheckAccountNumberInUserReg(userObj.userReg.AccountNum))
+                    return BadRequest(new { Message = "Account already exists Please Login" });
+
+                //if (await CheckCustomerIdExistAsync(userObj.userReg.CustomerId))
+                //    return BadRequest(new { Message = "CustomerId already exists" });
 
 
 
@@ -211,7 +214,7 @@ namespace BankAuth.Controllers
             }
             else
             {
-                return NotFound("The phone number, email, and account number do not match or belong to different users.");
+                return BadRequest(new { Message = "The phone number, email, and account number do not match or belong to different users." });
             }
 
            
@@ -369,16 +372,17 @@ namespace BankAuth.Controllers
 
         private  string CreateJwtToken(UserReg user)
         {
+           
               var jwtTokenHandler = new JwtSecurityTokenHandler();
                 var key = Encoding.ASCII.GetBytes("veryveryverysecret...");
+            if (user.Role == "user")
+            {
                 var identity = new ClaimsIdentity(new Claim[]
                 {
                 new Claim(ClaimTypes.Role, user.Role),
-                
                 new Claim(ClaimTypes.Actor,user.AccountNum),
                 new Claim(ClaimTypes.NameIdentifier,user.CustomerId)
                 });
-
                 var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
 
                 var tokenDescriptor = new SecurityTokenDescriptor
@@ -391,6 +395,28 @@ namespace BankAuth.Controllers
                 var token = jwtTokenHandler.CreateToken(tokenDescriptor);
 
                 return jwtTokenHandler.WriteToken(token);
+            }
+            else
+            {
+                var identity = new ClaimsIdentity(new Claim[]
+                {
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim(ClaimTypes.NameIdentifier,user.CustomerId)
+                });
+                var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
+
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = identity,
+                    Expires = DateTime.Now.AddDays(1),
+                    SigningCredentials = credentials
+                };
+
+                var token = jwtTokenHandler.CreateToken(tokenDescriptor);
+
+                return jwtTokenHandler.WriteToken(token);
+            }
+                
 
         }
        

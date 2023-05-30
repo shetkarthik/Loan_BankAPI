@@ -4,6 +4,7 @@ using BankAuth.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankAuth.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230530170400_v251")]
+    partial class v251
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,55 +100,6 @@ namespace BankAuth.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("loan_interest", (string)null);
-                });
-
-            modelBuilder.Entity("BankAuth.Models.LoanDetails", b =>
-                {
-                    b.Property<int>("LoanId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LoanId"));
-
-                    b.Property<string>("AccountNum")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AnnualIncome")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<float?>("Interest")
-                        .HasColumnType("real");
-
-                    b.Property<string>("LoanAmount")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LoanEmi")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LoanEndDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LoanStartDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LoanTotalAmount")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LoanType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MonthlyIncome")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OtherEmi")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Tenure")
-                        .HasColumnType("int");
-
-                    b.HasKey("LoanId");
-
-                    b.ToTable("loan_details", (string)null);
                 });
 
             modelBuilder.Entity("BankAuth.Models.UserReg", b =>

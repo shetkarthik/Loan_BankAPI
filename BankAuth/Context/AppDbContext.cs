@@ -14,6 +14,8 @@ namespace BankAuth.Context
 
         public DbSet<UserReg> UserRegs { get; set; }
         public DbSet<CustomerAccountInfo> AccInfo { get; set; }
+        public DbSet<Interest> LoanInterest { get; set; }
+        public DbSet<LoanDetails> LoanDetails { get; set; }
         
 
         
@@ -30,6 +32,14 @@ namespace BankAuth.Context
 
                 .ToTable("customer_accountinfo");
             
+            modelBuilder.Entity<Interest>()
+
+                .ToTable("loan_interest");
+
+            modelBuilder.Entity<LoanDetails>()
+
+               .ToTable("loan_details");
+
 
 
 
