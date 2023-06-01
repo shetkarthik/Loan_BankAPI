@@ -5,7 +5,7 @@
 namespace BankAuth.Migrations
 {
     /// <inheritdoc />
-    public partial class v252 : Migration
+    public partial class v62 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -18,7 +18,7 @@ namespace BankAuth.Controllers
         public LoanController(AppDbContext appDbContext)
         {
             _authContext = appDbContext;
-            
+
 
         }
 
@@ -34,7 +34,7 @@ namespace BankAuth.Controllers
 
         public async Task<IActionResult> ApplyLoan([FromBody] LoanDetails LoanObj)
         {
-            var selected_interest = await GetInterestByLoanType(LoanObj.LoanType);
+            LoanObj.Interest = await GetInterestByLoanType(LoanObj.LoanType);
 
             float loanAmount = float.Parse(LoanObj.LoanAmount);
             var tenure = LoanObj.Tenure;
@@ -48,16 +48,16 @@ namespace BankAuth.Controllers
 
 
 
-            var total_loan_Amount = (Math.Round((double)(loanAmount + (loanAmount * (selected_interest / 100) * tenure)))).ToString();
-            var loan_Emi = (Math.Round((double)(loanAmount * (selected_interest / 1200) * Math.Pow((double)(1 + (selected_interest / 1200)), (double)(tenure * 12))) / (Math.Pow((double)(1 + (selected_interest / 1200)), (double)(tenure * 12)) - 1))).ToString();
+            var total_loan_Amount = (Math.Round((double)(loanAmount + (loanAmount * (LoanObj.Interest / 100) * tenure)))).ToString();
+            var loan_Emi = (Math.Round((double)(loanAmount * (LoanObj.Interest / 1200) * Math.Pow((double)(1 + (LoanObj.Interest / 1200)), (double)(tenure * 12))) / (Math.Pow((double)(1 + (LoanObj.Interest / 1200)), (double)(tenure * 12)) - 1))).ToString();
 
 
             var updatedLoanObj = new LoanDetails
             {
-                AccountNum = "123412341234",
+                AccountNum = LoanObj.AccountNum,
                 LoanType = LoanObj.LoanType,
                 LoanAmount = LoanObj.LoanAmount,
-                Interest = selected_interest,
+                Interest = LoanObj.Interest,
                 Tenure = LoanObj.Tenure,
                 LoanEmi = loan_Emi,
                 LoanTotalAmount = total_loan_Amount,
@@ -65,17 +65,23 @@ namespace BankAuth.Controllers
                 AnnualIncome = LoanObj.AnnualIncome,
                 OtherEmi = LoanObj.OtherEmi,
                 LoanStartDate = loanStartDate,
-                LoanEndDate = loanEndDate
+                LoanEndDate = loanEndDate,
+                LoanPurpose = LoanObj.LoanPurpose,
+                PropertyArea = LoanObj.PropertyArea,
+                PropertyLoc = LoanObj.PropertyLoc,
+                PropertyValue = LoanObj.PropertyValue,
             };
 
-             _authContext.LoanDetails.Add(updatedLoanObj);
-             await _authContext.SaveChangesAsync();
+            _authContext.LoanDetails.Add(updatedLoanObj);
+
+            await _authContext.SaveChangesAsync();
+
 
             return Ok(new { Message = "LoanApplied Successfully" });
         }
     }
 
-    
+
 
 
 }

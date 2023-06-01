@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankAuth.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230530172809_v252")]
-    partial class v252
+    [Migration("20230531141734_v67")]
+    partial class v67
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -116,6 +116,9 @@ namespace BankAuth.Migrations
                     b.Property<string>("AnnualIncome")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("Created_At")
+                        .HasColumnType("datetime2");
+
                     b.Property<float?>("Interest")
                         .HasColumnType("real");
 
@@ -128,7 +131,13 @@ namespace BankAuth.Migrations
                     b.Property<string>("LoanEndDate")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("LoanPurpose")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("LoanStartDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LoanStatus")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LoanTotalAmount")
@@ -137,10 +146,22 @@ namespace BankAuth.Migrations
                     b.Property<string>("LoanType")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("Modified_At")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("MonthlyIncome")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OtherEmi")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PropertyArea")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PropertyLoc")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PropertyValue")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Tenure")

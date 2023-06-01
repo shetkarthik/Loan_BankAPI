@@ -28,4 +28,8 @@
     <None Include="C:\Users\ei13074\source\repos\BankAuth\BankAuth\Controllers\.editorconfig" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Uploads\" />
+  </ItemGroup>
+
 </Project>

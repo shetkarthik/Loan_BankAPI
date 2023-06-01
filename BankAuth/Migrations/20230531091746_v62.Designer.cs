@@ -4,6 +4,7 @@ using BankAuth.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankAuth.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230531091746_v62")]
+    partial class v62
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,28 +83,6 @@ namespace BankAuth.Migrations
                     b.ToTable("customer_accountinfo", (string)null);
                 });
 
-            modelBuilder.Entity("BankAuth.Models.Document", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AccountNum")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FilePath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("loan_documents", (string)null);
-                });
-
             modelBuilder.Entity("BankAuth.Models.Interest", b =>
                 {
                     b.Property<int>("Id")
@@ -135,9 +116,6 @@ namespace BankAuth.Migrations
                     b.Property<string>("AnnualIncome")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Created_At")
-                        .HasColumnType("datetime2");
-
                     b.Property<float?>("Interest")
                         .HasColumnType("real");
 
@@ -150,13 +128,7 @@ namespace BankAuth.Migrations
                     b.Property<string>("LoanEndDate")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LoanPurpose")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("LoanStartDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LoanStatus")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LoanTotalAmount")
@@ -165,22 +137,10 @@ namespace BankAuth.Migrations
                     b.Property<string>("LoanType")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Modified_At")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("MonthlyIncome")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OtherEmi")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PropertyArea")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PropertyLoc")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PropertyValue")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Tenure")

@@ -4,6 +4,7 @@ using BankAuth.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankAuth.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230531121624_v64")]
+    partial class v64
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -78,28 +81,6 @@ namespace BankAuth.Migrations
                     b.HasKey("CustomerAccountId");
 
                     b.ToTable("customer_accountinfo", (string)null);
-                });
-
-            modelBuilder.Entity("BankAuth.Models.Document", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AccountNum")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FilePath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("loan_documents", (string)null);
                 });
 
             modelBuilder.Entity("BankAuth.Models.Interest", b =>
@@ -172,15 +153,6 @@ namespace BankAuth.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OtherEmi")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PropertyArea")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PropertyLoc")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PropertyValue")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Tenure")
