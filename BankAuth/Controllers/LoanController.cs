@@ -14,11 +14,9 @@ namespace BankAuth.Controllers
     {
         private readonly AppDbContext _authContext;
 
-
         public LoanController(AppDbContext appDbContext)
         {
             _authContext = appDbContext;
-
 
         }
 
@@ -79,7 +77,25 @@ namespace BankAuth.Controllers
 
             return Ok(new { Message = "LoanApplied Successfully" });
         }
+        [HttpGet("getLoanByAccountNum")]
+        public async Task<IActionResult> getLoanByAccountNumber(string accountnum)
+        {
+            var loanDetails = await _authContext.LoanDetails.Where(x => x.AccountNum == accountnum).OrderByDescending(x=>x.LoanId).FirstOrDefaultAsync();
+
+
+            if (loanDetails == null)
+            {
+                return BadRequest(new
+                {
+
+                    Message = "No Loans taken by the user"
+                });
+            }
+            return Ok(loanDetails);
+        }
     }
+
+    
 
 
 

@@ -1,8 +1,13 @@
 ﻿using BankAuth.Context;
 using BankAuth.Models;
+using BankAuth.Services;
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit;
+using System.Net.Mail;
+using System.Xml.Schema;
 
 namespace BankAuth.Controllers
 {
@@ -12,11 +17,13 @@ namespace BankAuth.Controllers
     {
         private readonly IWebHostEnvironment _hostingEnvironment;
         private readonly AppDbContext _authContext;
+        private readonly IEmailService _emailService;
 
-        public FilesController(IWebHostEnvironment hostingEnvironment, AppDbContext authcontext)
+        public FilesController(IWebHostEnvironment hostingEnvironment, AppDbContext authcontext, IEmailService emailService)
         {
             _hostingEnvironment = hostingEnvironment;
             _authContext = authcontext;
+            _emailService = emailService;
         }
 
 
@@ -32,10 +39,15 @@ namespace BankAuth.Controllers
 
                 var accountNum = Request.Form["accountNumber"];
 
+                var loanType = Request.Form["loanType"];
+
                 if (files == null || files.Count == 0)
-                    return BadRequest("No files uploaded.");
+                    return BadRequest(new { Message = "No files uploaded." });
 
                 var fileUrls = new List<string>();
+                var fileNames = new List<string>();
+                var total_file_string = new string("");
+                var total_file_names = new string("");
 
                 foreach (var file in files)
                 {
@@ -50,25 +62,26 @@ namespace BankAuth.Controllers
                         }
 
                         var fileUrl = $"{Request.Scheme}://{Request.Host}/uploads/{fileName}";
-
-                        var newDocument = new Document
-                        {
-                            AccountNum = accountNum,
-                            FileName = fileName,
-                            FilePath = fileUrl,
-                        };
-
                         fileUrls.Add(fileUrl);
-                        _authContext.Documents.Add(newDocument);
-                        await _authContext.SaveChangesAsync();
-
-
+                        fileNames.Add(fileName);
+                        total_file_string = string.Join(",", fileUrls);
+                        total_file_names += string.Join(",", fileNames);
 
                     }
                 }
+                var newDocument = new Document
+                {
+                    AccountNum = accountNum,
+                    FileName = total_file_names,
+                    FilePath = total_file_string,
+                    LoanType = loanType
+                };
+
+                _authContext.Documents.Add(newDocument);
+                await _authContext.SaveChangesAsync();
 
 
-                return Ok(fileUrls);
+                return Ok(new { Message = "Files Uploaded Successfully" });
             }
             catch (Exception ex)
             {

@@ -18,8 +18,7 @@ namespace BankAuth.Context
         public DbSet<LoanDetails> LoanDetails { get; set; }
 
         public DbSet<Document> Documents { get; set; }
-     
-        
+   
 
         
 

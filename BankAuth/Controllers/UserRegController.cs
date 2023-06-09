@@ -180,15 +180,22 @@ namespace BankAuth.Controllers
             }
 
 
-            bool isAssociated = await ArePhoneAndEmailAccountAssociated(userObj.custObj.ContactNum, userObj.custObj.Email, userObj.custObj.AccountNum);
+          
+
+            bool isAssociated = await ArePhoneAndEmailAccountAssociated(userObj.custObj.ContactNum, userObj.custObj.Email, userObj.custObj.AccountNum,userObj.custObj.UserName);
 
             if (isAssociated)
             {
                 if (await CheckCustomerIdExistAsync(userObj.userReg.CustomerId))
-                    return BadRequest(new { Message = "CustomerId already exists" });
+                {
+                    return BadRequest(new { Message = "CustomerId already exists, Please Login" });
+                }
 
-                if (await CheckAccountNumberInUserReg(userObj.userReg.AccountNum))
+                if (await CheckAccountNumberInUserReg(userObj.custObj.AccountNum))
+                {
                     return BadRequest(new { Message = "Account already exists Please Login" });
+                }
+
 
                 //if (await CheckCustomerIdExistAsync(userObj.userReg.CustomerId))
                 //    return BadRequest(new { Message = "CustomerId already exists" });
@@ -214,7 +221,7 @@ namespace BankAuth.Controllers
             }
             else
             {
-                return BadRequest(new { Message = "The phone number, email, and account number do not match or belong to different users." });
+                return BadRequest(new { Message = "Invalid Credentials, Please Check and try again" });
             }
 
            
@@ -252,20 +259,22 @@ namespace BankAuth.Controllers
 
         private async Task<bool> CheckAccountNumberExistAsync(string accountnum)
         {
-            return !(await _authContext.AccInfo.AnyAsync(x => x.AccountNum != accountnum));
+            return !(await _authContext.AccInfo.AnyAsync(x => x.AccountNum == accountnum));
         }
 
-        private async Task<bool> ArePhoneAndEmailAccountAssociated(string phone, string email,string AccountNum)
+        private async Task<bool> ArePhoneAndEmailAccountAssociated(string phone, string email,string AccountNum,string username)
         {
             var phoneUser = await _authContext.AccInfo.SingleOrDefaultAsync(x => x.ContactNum == phone);
             var emailUser = await _authContext.AccInfo.SingleOrDefaultAsync(x => x.Email == email);
             var accountUser = await _authContext.AccInfo.SingleOrDefaultAsync(x => x.AccountNum == AccountNum);
+            var usernameUser = await _authContext.AccInfo.SingleOrDefaultAsync(x => x.UserName == username);
 
-            
-            if (phoneUser != null && emailUser != null && accountUser != null)
+
+
+            if (phoneUser != null && emailUser != null && accountUser != null && usernameUser != null)
             {
                 // Compare the user IDs
-                if (phoneUser.CustomerAccountId == emailUser.CustomerAccountId && phoneUser.CustomerAccountId == accountUser.CustomerAccountId)
+                if (phoneUser.CustomerAccountId == emailUser.CustomerAccountId && phoneUser.CustomerAccountId == accountUser.CustomerAccountId && phoneUser.CustomerAccountId == usernameUser.CustomerAccountId)
                 {
 
                     return true;
