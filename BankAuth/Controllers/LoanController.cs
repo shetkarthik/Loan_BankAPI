@@ -35,7 +35,7 @@ namespace BankAuth.Controllers
             LoanObj.Interest = await GetInterestByLoanType(LoanObj.LoanType);
 
             float loanAmount = float.Parse(LoanObj.LoanAmount);
-            var tenure = LoanObj.Tenure;
+            var tenure = LoanObj.Tenure /12;
 
 
             DateTime currentDate = DateTime.Now;
@@ -68,6 +68,7 @@ namespace BankAuth.Controllers
                 PropertyArea = LoanObj.PropertyArea,
                 PropertyLoc = LoanObj.PropertyLoc,
                 PropertyValue = LoanObj.PropertyValue,
+                OngoingLoan = LoanObj.OngoingLoan,
             };
 
             _authContext.LoanDetails.Add(updatedLoanObj);

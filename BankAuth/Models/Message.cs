@@ -1,5 +1,6 @@
 ﻿using MimeKit;
 using System.Globalization;
+using System.Net.Mail;
 
 namespace BankAuth.Models
 {
@@ -11,12 +12,15 @@ namespace BankAuth.Models
 
         public string Content { get; set; }
 
+        public List<Attachment> Attachments { get; set; }
+
         public Message(IEnumerable<string> to,string subject,string content)
         {
             To = new List<MailboxAddress>();
             To.AddRange(to.Select(x => new MailboxAddress("Alpha Bank",x)));
             Subject = subject;
             Content = content;
+            Attachments = new List<Attachment>();
         }
     }
 }

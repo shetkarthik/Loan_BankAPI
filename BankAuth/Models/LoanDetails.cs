@@ -30,6 +30,7 @@ namespace BankAuth.Models
         public string? PropertyLoc { get; set; }
         public string? PropertyValue { get; set; }
         public string? PropertyArea { get; set; }
+        public string? OngoingLoan { get; set; }
 
     }
 }

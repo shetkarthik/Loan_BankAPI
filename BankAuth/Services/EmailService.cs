@@ -2,8 +2,22 @@
 using MailKit.Net.Smtp;
 using MimeKit;
 
+
+public class Attachment
+{
+    public string FilePath { get; set; }
+    public string FileName { get; set; }
+
+    public Attachment(string filePath, string fileName)
+    {
+        FilePath = filePath;
+        FileName = fileName;
+    }
+}
+
 namespace BankAuth.Services
 {
+  
     public class EmailService : IEmailService
     {
         private readonly EmailConfiguration _emailConfig;
@@ -14,13 +28,35 @@ namespace BankAuth.Services
             Send(emailMessage);
         }
 
+
+
         private MimeMessage CreateEmailMessage(Message message)
         {
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress("Alpha Bank", _emailConfig.From));
             emailMessage.To.AddRange(message.To);
             emailMessage.Subject = message.Subject;
-            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = message.Content };
+            //emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = message.Content };
+
+            var bodyBuilder = new BodyBuilder();
+            bodyBuilder.TextBody = message.Content;
+
+            foreach (var attachment in message.Attachments)
+            {
+                var attachmentPart = new MimePart()
+                {
+                    Content = new MimeContent(File.OpenRead(attachment.FilePath), ContentEncoding.Default),
+                    ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                    ContentTransferEncoding = ContentEncoding.Base64,
+                    FileName = attachment.FileName
+                };
+
+                bodyBuilder.Attachments.Add(attachmentPart);
+            }
+
+            emailMessage.Body = bodyBuilder.ToMessageBody();
+
+
 
             return emailMessage;
         }
