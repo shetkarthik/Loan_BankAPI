@@ -20,6 +20,14 @@ namespace BankAuth.Controllers
 
         }
 
+
+        [HttpGet("getAllLoans")]
+
+        public async Task<IEnumerable<LoanDetails>> GetLoanDetails()
+        {
+            return await _authContext.LoanDetails.ToListAsync();
+        }
+
         [HttpGet("getInterest")]
         public async Task<float?> GetInterestByLoanType(string loanType)
         {

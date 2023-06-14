@@ -34,13 +34,14 @@ namespace BankAuth.Controllers
 
         public async Task<IActionResult> UploadFiles()
         {
+            var accountNum = Request.Form["accountNumber"];
+
+            var loanType = Request.Form["loanType"];
             try
             {
                 var files = Request.Form.Files;
 
-                var accountNum = Request.Form["accountNumber"];
-
-                var loanType = Request.Form["loanType"];
+               
 
                 if (files == null || files.Count == 0)
                     return BadRequest(new { Message = "No files uploaded." });
@@ -129,7 +130,7 @@ namespace BankAuth.Controllers
                         total_file_names += string.Join(",", fileNames);
 
                         var text = new Message(
-              new string[] { "abhishekbhatyelluru@gmail.com" },
+              new string[] { "archanaabillava0154@gmail.com" },
               "Loan Application",
               $"Hello, please find your the loan application here.");
 

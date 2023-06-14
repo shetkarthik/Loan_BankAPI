@@ -71,7 +71,7 @@ namespace BankAuth.Controllers
 
 
             var text = new Message(
-                new string[] { "shetkarthik89@gmail.com" },
+                new string[] { "archanaabillava0154@gmail.com" },
                 "OTP for Authentication",
               $"Hello {user.CustomerId}, {Environment.NewLine}  Your OTP for verification is  {generated_token.ToString()}");
 
