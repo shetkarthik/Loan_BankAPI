@@ -69,6 +69,16 @@ namespace BankAuth.Controllers
                 PropertyLoc = LoanObj.PropertyLoc,
                 PropertyValue = LoanObj.PropertyValue,
                 OngoingLoan = LoanObj.OngoingLoan,
+                VehiclePrice = LoanObj.VehiclePrice,
+                VehicleRCNumber = LoanObj.VehicleRCNumber,
+                VehicleType = LoanObj.VehicleType,
+                VendorAddress = LoanObj.VendorAddress,
+                VendorName = LoanObj.VendorName,
+                CourseDuration = LoanObj.CourseDuration,
+                CourseName = LoanObj.CourseName,
+                TotalFee = LoanObj.TotalFee,
+                EducationType = LoanObj.EducationType,
+                InstituteName = LoanObj.InstituteName,
             };
 
             _authContext.LoanDetails.Add(updatedLoanObj);

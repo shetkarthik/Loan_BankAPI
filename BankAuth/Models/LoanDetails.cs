@@ -31,6 +31,18 @@ namespace BankAuth.Models
         public string? PropertyValue { get; set; }
         public string? PropertyArea { get; set; }
         public string? OngoingLoan { get; set; }
+        public string? VehicleType { get; set; }
+        public string? VehicleRCNumber { get; set; }
+        public string? VehiclePrice { get; set; }
+        public string? VendorName { get; set; }
+        public string? VendorAddress { get; set; }
+        public string? EducationType { get; set; }
+        public string? CourseName { get; set; }
+        public string? InstituteName { get; set; }
+        public string? CourseDuration { get; set; }
+        public string? TotalFee { get; set; }
+        public string? LoanComment { get; set; }
+
 
     }
 }

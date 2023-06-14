@@ -65,12 +65,11 @@ namespace BankAuth.Controllers
                         var fileUrl = $"{Request.Scheme}://{Request.Host}/uploads/{fileName}";
                         fileUrls.Add(fileUrl);
                         fileNames.Add(fileName);
-                        total_file_string = string.Join(",", fileUrls);
-                        total_file_names += string.Join(",", fileNames);
-
                     }
                 }
-              
+                total_file_string = string.Join(",", fileUrls);
+                total_file_names = string.Join(",", fileNames);
+
                 var newDocument = new Document
                 {
                     AccountNum = accountNum,
@@ -129,9 +128,10 @@ namespace BankAuth.Controllers
                         total_file_names += string.Join(",", fileNames);
 
                         var text = new Message(
-              new string[] { "abhishekbhatyelluru@gmail.com" },
+              new string[] { "shetkarthik89@gmail.com" },
               "Loan Application",
-              $"Hello, please find your the loan application here.");
+              "Hello, please find your the loan application here"
+          );
 
                         foreach (var email_fileName in fileNames)
                         {
