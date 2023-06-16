@@ -24,6 +24,7 @@ namespace BankAuth.Models
         public string? LoanStartDate { get; set; }
         public string? LoanEndDate { get; set; }
         public string? LoanStatus { get; set; }
+       
         public DateTime Created_At { get; set; } = DateTime.Now;
         public DateTime Modified_At { get; set; } = DateTime.Now;
         public string? LoanPurpose { get; set; }
@@ -31,6 +32,8 @@ namespace BankAuth.Models
         public string? PropertyValue { get; set; }
         public string? PropertyArea { get; set; }
         public string? OngoingLoan { get; set; }
+
+        public string?  Comment { get;set; }
 
     }
 }

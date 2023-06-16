@@ -44,6 +44,7 @@ namespace BankAuth.Controllers
             return type.LoanInterest;
 
         }
+
         [HttpPost("checkEligible")]
 
            public async Task<IActionResult> CheckEligible([FromBody] LoanEligible LoanObj)

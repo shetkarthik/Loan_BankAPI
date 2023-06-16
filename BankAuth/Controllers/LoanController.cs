@@ -4,21 +4,36 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using SendGrid.Helpers.Mail;
 using System.Globalization;
 
 namespace BankAuth.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
+
     public class LoanController : ControllerBase
     {
+
         private readonly AppDbContext _authContext;
+
+        public class Payload
+        {
+            public int? Id { get; set; }
+            public string? status { get; set; }
+            public string? comment { get; set; }
+        }
+
+
 
         public LoanController(AppDbContext appDbContext)
         {
             _authContext = appDbContext;
 
         }
+
+
 
 
         [HttpGet("getAllLoans")]
@@ -60,6 +75,7 @@ namespace BankAuth.Controllers
 
             var updatedLoanObj = new LoanDetails
             {
+                LoanId=LoanObj.LoanId,
                 AccountNum = LoanObj.AccountNum,
                 LoanType = LoanObj.LoanType,
                 LoanAmount = LoanObj.LoanAmount,
@@ -84,7 +100,7 @@ namespace BankAuth.Controllers
             await _authContext.SaveChangesAsync();
 
 
-            return Ok(new { Message = "LoanApplied Successfully" });
+            return Ok(new { updatedLoanObj.LoanId });
         }
         [HttpGet("getLoanByAccountNum")]
         public async Task<IActionResult> getLoanByAccountNumber(string accountnum)
@@ -102,9 +118,49 @@ namespace BankAuth.Controllers
             }
             return Ok(loanDetails);
         }
+
+        [HttpPut("status")]
+        //public async Task<IActionResult> UpdateLoanStatus(int id, [] string status)
+        public async Task<IActionResult> UpdateLoanStatus([FromBody] Payload payload)
+        {
+            var loan = await _authContext.LoanDetails.FindAsync(payload.Id);
+            if (loan == null)
+            {
+                return NotFound();
+            }
+
+            loan.LoanStatus = payload.status;
+            loan.Comment=payload.comment;
+
+            _authContext.Entry(loan).State = EntityState.Modified;
+
+            try
+            {
+                await _authContext.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return StatusCode(500); 
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetLoan(int id)
+        {
+            var loan = await _authContext.LoanDetails.FindAsync(id);
+            if (loan == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(loan);
+        }
+
+
     }
 
-    
+
 
 
 

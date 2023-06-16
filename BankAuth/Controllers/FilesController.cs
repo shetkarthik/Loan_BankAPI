@@ -37,6 +37,7 @@ namespace BankAuth.Controllers
             var accountNum = Request.Form["accountNumber"];
 
             var loanType = Request.Form["loanType"];
+            var loanId = Request.Form["loanId"];
             try
             {
                 var files = Request.Form.Files;
@@ -71,13 +72,14 @@ namespace BankAuth.Controllers
 
                     }
                 }
-              
+
                 var newDocument = new Document
                 {
                     AccountNum = accountNum,
                     FileName = total_file_names,
                     FilePath = total_file_string,
-                    LoanType = loanType
+                    LoanType = loanType,
+                    LoanId = Convert.ToInt32(loanId),
                 };
 
                 _authContext.Documents.Add(newDocument);
