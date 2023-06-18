@@ -11,5 +11,7 @@ namespace BankAuth.Models
         public string? FileName { get; set; }
         public string? FilePath { get; set; }
         public string? LoanType { get; set; }
+
+        public int? LoanId { get; set; }
     }
 }

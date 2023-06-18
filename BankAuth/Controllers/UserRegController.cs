@@ -73,7 +73,7 @@ namespace BankAuth.Controllers
             var text = new Message(
                 new string[] { "shetkarthik89@gmail.com" },
                 "OTP for Authentication",
-              $"Hello {user.CustomerId}, {Environment.NewLine}  Your OTP for verification is  {generated_token.ToString()}");
+              $"Hello {user.CustomerId}, {Environment.NewLine}  Your OTP for verification is  {generated_token}");
 
 
 
@@ -87,7 +87,7 @@ namespace BankAuth.Controllers
                 Message = "Check your registered Email for the OTP"
             });
 
-
+           
 
         }
 
@@ -107,7 +107,7 @@ namespace BankAuth.Controllers
 
             if (PasswordHasher.VerifyPassword(tokenentry, user.AuthToken))
 
-            //if (tokenentry == user.AuthToken)
+
             {
                 user.Token = CreateJwtToken(user);
 

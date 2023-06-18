@@ -7,6 +7,7 @@ namespace BankAuth.Models
     public class LoanDetails
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int LoanId { get; set; }
 
         public string? AccountNum { get; set; }
@@ -41,7 +42,7 @@ namespace BankAuth.Models
         public string? InstituteName { get; set; }
         public string? CourseDuration { get; set; }
         public string? TotalFee { get; set; }
-        public string? LoanComment { get; set; }
+        public string? Comment { get; set; }
 
 
     }

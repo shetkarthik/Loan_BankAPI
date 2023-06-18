@@ -14,11 +14,27 @@ namespace BankAuth.Controllers
     {
         private readonly AppDbContext _authContext;
 
+        public class Payload
+        {
+            public int? Id { get; set; }
+            public string? status { get; set; }
+            public string? comment { get; set; }
+        }
+
+
         public LoanController(AppDbContext appDbContext)
         {
             _authContext = appDbContext;
 
         }
+
+        [HttpGet("getAllLoans")]
+
+        public async Task<IEnumerable<LoanDetails>> GetLoanDetails()
+        {
+            return await _authContext.LoanDetails.ToListAsync();
+        }
+
 
         [HttpGet("getInterest")]
         public async Task<float?> GetInterestByLoanType(string loanType)
@@ -49,9 +65,11 @@ namespace BankAuth.Controllers
             var total_loan_Amount = (Math.Round((double)(loanAmount + (loanAmount * (LoanObj.Interest / 100) * tenure)))).ToString();
             var loan_Emi = (Math.Round((double)(loanAmount * (LoanObj.Interest / 1200) * Math.Pow((double)(1 + (LoanObj.Interest / 1200)), (double)(tenure * 12))) / (Math.Pow((double)(1 + (LoanObj.Interest / 1200)), (double)(tenure * 12)) - 1))).ToString();
 
+            
 
             var updatedLoanObj = new LoanDetails
             {
+                LoanId = LoanObj.LoanId,
                 AccountNum = LoanObj.AccountNum,
                 LoanType = LoanObj.LoanType,
                 LoanAmount = LoanObj.LoanAmount,
@@ -86,7 +104,11 @@ namespace BankAuth.Controllers
             await _authContext.SaveChangesAsync();
 
 
-            return Ok(new { Message = "LoanApplied Successfully" });
+           // return Ok(new { Message = "LoanApplied Successfully" });
+
+            return Ok(new {updatedLoanObj.LoanId});
+            
+
         }
         [HttpGet("getLoanByAccountNum")]
         public async Task<IActionResult> getLoanByAccountNumber(string accountnum)
@@ -104,9 +126,34 @@ namespace BankAuth.Controllers
             }
             return Ok(loanDetails);
         }
+        [HttpPut("status")]
+        public async Task<IActionResult> UpdateLoanStatus([FromBody] Payload payload)
+        {
+            var loan = await _authContext.LoanDetails.FindAsync(payload.Id);
+            if (loan == null)
+            {
+                return NotFound();
+            }
+
+            loan.LoanStatus = payload.status;
+            loan.Comment = payload.comment;
+
+            _authContext.Entry(loan).State = EntityState.Modified;
+
+            try
+            {
+                await _authContext.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return StatusCode(500);
+            }
+        }
+
     }
 
-    
+
 
 
 

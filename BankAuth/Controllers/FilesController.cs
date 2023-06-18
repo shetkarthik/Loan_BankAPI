@@ -42,6 +42,10 @@ namespace BankAuth.Controllers
 
                 var loanType = Request.Form["loanType"];
 
+                var loanId = Request.Form["loanId"];
+
+                
+
                 if (files == null || files.Count == 0)
                     return BadRequest(new { Message = "No files uploaded." });
 
@@ -75,14 +79,16 @@ namespace BankAuth.Controllers
                     AccountNum = accountNum,
                     FileName = total_file_names,
                     FilePath = total_file_string,
-                    LoanType = loanType
+                    LoanType = loanType,
+                    LoanId = Convert.ToInt32(loanId),
                 };
 
                 _authContext.Documents.Add(newDocument);
                 await _authContext.SaveChangesAsync();
 
 
-                return Ok(new { Message = "Files Uploaded Successfully" });
+                //return Ok(new { Message = "Files Uploaded Successfully" });
+                return Ok(newDocument);
             }
             catch (Exception ex)
             {
