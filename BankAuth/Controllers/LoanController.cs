@@ -1,5 +1,6 @@
 ﻿using BankAuth.Context;
 using BankAuth.Models;
+using BankAuth.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ namespace BankAuth.Controllers
     public class LoanController : ControllerBase
     {
         private readonly AppDbContext _authContext;
+        private readonly IEmailService _emailService;
 
         public class Payload
         {
@@ -22,9 +24,10 @@ namespace BankAuth.Controllers
         }
 
 
-        public LoanController(AppDbContext appDbContext)
+        public LoanController(AppDbContext appDbContext, IEmailService emailService)
         {
             _authContext = appDbContext;
+            _emailService = emailService;
 
         }
 
@@ -32,7 +35,9 @@ namespace BankAuth.Controllers
 
         public async Task<IEnumerable<LoanDetails>> GetLoanDetails()
         {
-            return await _authContext.LoanDetails.ToListAsync();
+            return await _authContext.LoanDetails
+        .Where(ld => ld.LoanStatus == null)
+        .ToListAsync();
         }
 
 
@@ -113,7 +118,25 @@ namespace BankAuth.Controllers
         [HttpGet("getLoanByAccountNum")]
         public async Task<IActionResult> getLoanByAccountNumber(string accountnum)
         {
-            var loanDetails = await _authContext.LoanDetails.Where(x => x.AccountNum == accountnum).OrderByDescending(x=>x.LoanId).FirstOrDefaultAsync();
+            var loanDetails = await _authContext.LoanDetails.Where(x => x.AccountNum == accountnum).OrderByDescending(x => x.LoanId).FirstOrDefaultAsync();
+
+
+            if (loanDetails == null)
+            {
+                return BadRequest(new
+                {
+
+                    Message = "No Loans taken by the user"
+                });
+            }
+            return Ok(loanDetails);
+        }
+        
+        
+        [HttpGet("getLoanStatusByAccountNum")]
+        public async Task<IActionResult> getLoanStatusByAccountNumber(string accountnum)
+        {
+            var loanDetails = await _authContext.LoanDetails.Where(x => x.AccountNum == accountnum).ToListAsync();
 
 
             if (loanDetails == null)
@@ -137,12 +160,16 @@ namespace BankAuth.Controllers
 
             loan.LoanStatus = payload.status;
             loan.Comment = payload.comment;
+          
 
             _authContext.Entry(loan).State = EntityState.Modified;
 
             try
             {
+                var text = new Message(
+       new string[] { "shetkarthik89@gmail.com" }, "Updated Loan Application Status", $"Hello Sir/Madam, {Environment.NewLine} Your Loan has been reviewed and verified by our managers and results are as follows.{Environment.NewLine}" + $"Loan Id : {payload.Id} {Environment.NewLine}" + $"Loan Status : {payload.status} {Environment.NewLine}" + $"Reviewed Comments: {payload.comment} {Environment.NewLine}" + $"Please visit our branch for further details and queries");
                 await _authContext.SaveChangesAsync();
+                _emailService.SendEmail(text);
                 return NoContent();
             }
             catch (DbUpdateConcurrencyException)
