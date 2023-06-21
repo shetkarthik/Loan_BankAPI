@@ -58,7 +58,8 @@ namespace BankAuth.Controllers
                 {
                     if (file.Length > 0)
                     {
-                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        //var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName)
+                        var fileName = file.FileName;
                         var filePath = Path.Combine(_hostingEnvironment.ContentRootPath, "uploads", fileName);
 
                         using (var stream = new FileStream(filePath, FileMode.Create))

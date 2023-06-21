@@ -262,6 +262,40 @@ namespace BankAuth.Controllers
             return !(await _authContext.AccInfo.AnyAsync(x => x.AccountNum == accountnum));
         }
 
+
+        [HttpPost("registerAdmin")]
+
+
+        public async Task<IActionResult> RegisterNewAdmin([FromBody] UserReg userObj)
+        {
+            if (userObj == null)
+            {
+                return BadRequest();
+            }
+
+                var newuser = new UserReg
+                {
+                    Password = PasswordHasher.HashPassword(userObj.Password),
+                    //Password = userObj.userReg.Password,
+                    Role = "admin",
+                    Token = "",
+                    AccountNum = null,
+                    CustomerId = userObj.CustomerId,
+
+                };
+
+
+                await _authContext.UserRegs.AddAsync(newuser);
+                await _authContext.SaveChangesAsync();
+
+                return Ok(new { Message = "Register Success" });
+            }
+
+
+
+
+
+
         private async Task<bool> ArePhoneAndEmailAccountAssociated(string phone, string email,string AccountNum,string username)
         {
             var phoneUser = await _authContext.AccInfo.SingleOrDefaultAsync(x => x.ContactNum == phone);

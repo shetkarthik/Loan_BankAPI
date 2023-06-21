@@ -23,6 +23,8 @@ namespace BankAuth.Controllers
             public string? comment { get; set; }
         }
 
+        
+
 
         public LoanController(AppDbContext appDbContext, IEmailService emailService)
         {
@@ -38,6 +40,15 @@ namespace BankAuth.Controllers
             return await _authContext.LoanDetails
         .Where(ld => ld.LoanStatus == null)
         .ToListAsync();
+        } 
+        
+        [HttpGet("getAllAckLoans")]
+
+        public async Task<IEnumerable<LoanDetails>> GetLoanAckDetails()
+        {
+            return await _authContext.LoanDetails
+        .Where(ld => ld.LoanStatus != null)
+        .ToListAsync();
         }
 
 
@@ -45,15 +56,18 @@ namespace BankAuth.Controllers
         public async Task<float?> GetInterestByLoanType(string loanType)
         {
             var type = await _authContext.LoanInterest.FirstOrDefaultAsync(x => x.LoanType == loanType);
-
             return type.LoanInterest;
 
-        }
+        } 
+
         [HttpPost("applyLoan")]
 
         public async Task<IActionResult> ApplyLoan([FromBody] LoanDetails LoanObj)
         {
-            LoanObj.Interest = await GetInterestByLoanType(LoanObj.LoanType);
+             var interest_value  = await GetInterestByLoanType(LoanObj.LoanType);
+
+            LoanObj.Interest = interest_value;
+            
 
             float loanAmount = float.Parse(LoanObj.LoanAmount);
             var tenure = LoanObj.Tenure /12;
