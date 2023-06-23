@@ -51,9 +51,20 @@ namespace BankAuth.Controllers
                 var Interest = await GetInterestByLoanType(LoanObj.LoanType);
 
                 float loanAmount = float.Parse(LoanObj.LoanAmount);
-                float monthlyIncome = float.Parse(LoanObj.MonthlyIncome);
+                float monthlyIncome = float.Parse(LoanObj.AnnualIncome) /12;
                 float annualIncome = float.Parse(LoanObj.AnnualIncome);
                 float otheremi = float.Parse(LoanObj.OtherEmi);
+
+              if(loanAmount <  10000 || loanAmount >= 100000000) 
+              {
+                return BadRequest(new { Message = "Loan Amount must be within 10,000 to 10 crores" });
+              }
+
+              if(annualIncome >= 100000000)
+              {
+                return BadRequest(new { Message = "AnnualIncome maxed out" });
+            }
+
 
                 var tenure = LoanObj.Tenure;
 
@@ -71,8 +82,8 @@ namespace BankAuth.Controllers
 
                 var result = new Result
                 {
-                    AvailableEMI = $"Your Available EMI is {availableamount}",
-                    LoanEMI = $"Your Loan EMI for the following input is {loan_Emi}",
+                    AvailableEMI = $"Your Available EMI is \u20B9{availableamount}",
+                    LoanEMI = $"Your Loan EMI for the following input is \u20B9{loan_Emi}",
                     Results = "Sorry your Loan cannot be approved, Please Contact our customer services for more info",
                     Color = "danger"
                 };
@@ -82,8 +93,8 @@ namespace BankAuth.Controllers
             {
                 var result = new Result
                 {
-                    AvailableEMI = $"Your Available EMI is {availableamount}",
-                    LoanEMI = $"Your Loan EMI for the following input is {loan_Emi}",
+                    AvailableEMI = $"Your Available EMI is \u20B9{availableamount}",
+                    LoanEMI = $"Your Loan EMI for the following input is \u20B9{loan_Emi}",
                     Results = "Congratulations!! Your Loan is Eligible and waiting to be approved",
                     Color = "success"
                 };

@@ -38,7 +38,7 @@ namespace BankAuth.Controllers
         public async Task<IEnumerable<LoanDetails>> GetLoanDetails()
         {
             return await _authContext.LoanDetails
-        .Where(ld => ld.LoanStatus == null)
+        .Where(ld => ld.LoanStatus == "Processing")
         .ToListAsync();
         } 
         
@@ -47,7 +47,7 @@ namespace BankAuth.Controllers
         public async Task<IEnumerable<LoanDetails>> GetLoanAckDetails()
         {
             return await _authContext.LoanDetails
-        .Where(ld => ld.LoanStatus != null)
+        .Where(ld => ld.LoanStatus != "Processing")
         .ToListAsync();
         }
 
@@ -68,8 +68,10 @@ namespace BankAuth.Controllers
 
             LoanObj.Interest = interest_value;
             
+            
 
             float loanAmount = float.Parse(LoanObj.LoanAmount);
+            var monthlyIncome = (float.Parse(LoanObj.AnnualIncome) / 12).ToString();
             var tenure = LoanObj.Tenure /12;
 
 
@@ -96,7 +98,7 @@ namespace BankAuth.Controllers
                 Tenure = LoanObj.Tenure,
                 LoanEmi = loan_Emi,
                 LoanTotalAmount = total_loan_Amount,
-                MonthlyIncome = LoanObj.MonthlyIncome,
+                MonthlyIncome = monthlyIncome,
                 AnnualIncome = LoanObj.AnnualIncome,
                 OtherEmi = LoanObj.OtherEmi,
                 LoanStartDate = loanStartDate,
@@ -116,6 +118,7 @@ namespace BankAuth.Controllers
                 TotalFee = LoanObj.TotalFee,
                 EducationType = LoanObj.EducationType,
                 InstituteName = LoanObj.InstituteName,
+                LoanStatus = "Processing"
             };
 
             _authContext.LoanDetails.Add(updatedLoanObj);

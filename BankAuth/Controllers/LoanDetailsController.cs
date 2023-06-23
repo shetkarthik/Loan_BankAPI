@@ -3,6 +3,7 @@ using BankAuth.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BankAuth.Controllers
 {
@@ -22,6 +23,8 @@ namespace BankAuth.Controllers
             public CustomerAccountInfo CustomerAccountInfo { get; set; }
             public Document Document { get; set; }
         }
+
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<LoanDetailsObj>> GetLoanDetails(int id)
@@ -55,6 +58,43 @@ namespace BankAuth.Controllers
             };
 
             return Ok(loanDetailsObj);
+        }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<LoanDetails>> Search(int? loanId, string? AccountNum, string? loanType, string? loanStatus)
+        {
+            var query =  _context.LoanDetails.AsQueryable();
+
+            if (loanId != null)
+            {
+                query = query.Where(l => l.LoanId == loanId);
+            }
+
+            if (!string.IsNullOrEmpty(AccountNum))
+            {
+                query = query.Where(l => l.AccountNum == AccountNum);
+            }
+
+            if (!string.IsNullOrEmpty(loanType))
+            {
+                query = query.Where(l => l.LoanType == loanType);
+            }
+            if (!string.IsNullOrEmpty(loanStatus))
+            {
+                query = query.Where(l => l.LoanStatus == loanStatus);
+            }
+
+            
+
+            var loans = query.ToList();
+
+            if (loans.IsNullOrEmpty())
+            {
+                return BadRequest(new { Message = "No such Loans exist" });
+
+            }
+
+            return Ok(loans);
         }
 
 

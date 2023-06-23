@@ -39,7 +39,15 @@ namespace BankAuth.Context
                 .ToTable("loan_interest");
 
 
-            modelBuilder.Entity<LoanDetails>().ToTable("loan_details");
+            modelBuilder.Entity<LoanDetails>(entity =>
+            {
+                entity.ToTable("loan_details");
+               // entity.Property(e => e.LoanId)
+               //.HasDefaultValue(12341230)
+               //.ValueGeneratedOnAdd();
+            });
+            
+                
 
             modelBuilder.Entity<Document>().ToTable("loan_documents");
 
