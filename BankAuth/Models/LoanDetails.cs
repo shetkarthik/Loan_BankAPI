@@ -6,6 +6,7 @@ namespace BankAuth.Models
 {
     public class LoanDetails
     {
+        
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int LoanId { get; set; }
@@ -15,6 +16,7 @@ namespace BankAuth.Models
         public string? LoanType { get; set; }
         public string? LoanAmount { get; set; }
         public float? Interest { get; set; }
+        
         public int? Tenure { get; set; }
         public string? LoanEmi { get; set; }
 

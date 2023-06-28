@@ -55,16 +55,6 @@ namespace BankAuth.Controllers
                 float annualIncome = float.Parse(LoanObj.AnnualIncome);
                 float otheremi = float.Parse(LoanObj.OtherEmi);
 
-              if(loanAmount <  10000 || loanAmount >= 100000000) 
-              {
-                return BadRequest(new { Message = "Loan Amount must be within 10,000 to 10 crores" });
-              }
-
-              if(annualIncome >= 100000000)
-              {
-                return BadRequest(new { Message = "AnnualIncome maxed out" });
-            }
-
 
                 var tenure = LoanObj.Tenure;
 

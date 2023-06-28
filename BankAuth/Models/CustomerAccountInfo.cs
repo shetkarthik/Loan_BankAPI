@@ -42,6 +42,7 @@ namespace BankAuth.Models
         public string? OccupationAddress { get; set; }
         public string? OrganizationName { get; set; }
         public string? OrganizationAddress { get; set; }
+       
 
     }
 }

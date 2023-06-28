@@ -132,6 +132,112 @@ namespace BankAuth.Controllers
             
 
         }
+
+        [HttpPut("updateLoan")]
+
+        public async Task<IActionResult> UpdateLoan([FromBody] LoanDetails LoanObj, int loanid)
+        {
+            try
+            {
+                var existingLoanObj = await _authContext.LoanDetails.FindAsync(loanid);
+
+                if (existingLoanObj == null)
+                {
+                    return NotFound();
+                }
+
+                float loanAmount;
+                if (!float.TryParse(LoanObj.LoanAmount, out loanAmount))
+                {
+                    return BadRequest("Invalid loan amount.");
+                }
+
+                float annualIncome;
+                if (!float.TryParse(LoanObj.AnnualIncome, out annualIncome))
+                {
+                    return BadRequest("Invalid annual income.");
+                }
+
+                int? tenure = LoanObj.Tenure;
+                if (!tenure.HasValue)
+                {
+                    return BadRequest("Tenure is required.");
+                }
+
+                float monthlyIncome = annualIncome / 12;
+                DateTime currentDate = DateTime.Now;
+                DateTime futureDate = currentDate.AddYears((int)(tenure.Value / 12));
+                string loanStartDate = currentDate.ToString("dd/MM/yyyy", CultureInfo.GetCultureInfo("en-GB"));
+                string loanEndDate = futureDate.ToString("dd/MM/yyyy", CultureInfo.GetCultureInfo("en-GB"));
+
+                double interest = (double)(LoanObj.Interest / 100);
+                var total_loan_Amount = Math.Round(loanAmount + (loanAmount * interest * tenure.Value)).ToString();
+                var loan_Emi = Math.Round(loanAmount * (interest / 12) * Math.Pow((1 + (interest / 12)), (tenure.Value * 12)) / (Math.Pow((1 + (interest / 12)), (tenure.Value * 12)) - 1)).ToString();
+
+                existingLoanObj.LoanId = loanid;
+                existingLoanObj.AccountNum = LoanObj.AccountNum;
+                existingLoanObj.LoanType = LoanObj.LoanType;
+                existingLoanObj.LoanAmount = LoanObj.LoanAmount;
+                existingLoanObj.Interest = LoanObj.Interest;
+                existingLoanObj.Tenure = tenure.Value;
+                existingLoanObj.LoanEmi = loan_Emi.ToString();
+                existingLoanObj.LoanTotalAmount = total_loan_Amount.ToString();
+                existingLoanObj.MonthlyIncome = monthlyIncome.ToString();
+                existingLoanObj.AnnualIncome = LoanObj.AnnualIncome;
+                existingLoanObj.OtherEmi = LoanObj.OtherEmi;
+                existingLoanObj.LoanStartDate = loanStartDate;
+                existingLoanObj.LoanEndDate = loanEndDate;
+                existingLoanObj.LoanPurpose = LoanObj.LoanPurpose;
+                existingLoanObj.PropertyArea = LoanObj.PropertyArea;
+                existingLoanObj.PropertyLoc = LoanObj.PropertyLoc;
+                existingLoanObj.PropertyValue = LoanObj.PropertyValue;
+                existingLoanObj.OngoingLoan = LoanObj.OngoingLoan;
+                existingLoanObj.VehiclePrice = LoanObj.VehiclePrice;
+                existingLoanObj.VehicleRCNumber = LoanObj.VehicleRCNumber;
+                existingLoanObj.VehicleType = LoanObj.VehicleType;
+                existingLoanObj.VendorAddress = LoanObj.VendorAddress;
+                existingLoanObj.VendorName = LoanObj.VendorName;
+                existingLoanObj.CourseDuration = LoanObj.CourseDuration;
+                existingLoanObj.CourseName = LoanObj.CourseName;
+                existingLoanObj.TotalFee = LoanObj.TotalFee;
+                existingLoanObj.EducationType = LoanObj.EducationType;
+                existingLoanObj.InstituteName = LoanObj.InstituteName;
+                existingLoanObj.LoanStatus = "Processing";
+
+                _authContext.Entry(existingLoanObj).State = EntityState.Modified;
+                await _authContext.SaveChangesAsync();
+
+                return Ok( new {Message = "Loan Updated successfully"});
+            }
+            catch (Exception ex)
+            {
+                // Handle exception or log the error
+                return StatusCode(500, "An error occurred while updating the loan.");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         [HttpGet("getLoanByAccountNum")]
         public async Task<IActionResult> getLoanByAccountNumber(string accountnum)
         {
@@ -177,6 +283,7 @@ namespace BankAuth.Controllers
 
             loan.LoanStatus = payload.status;
             loan.Comment = payload.comment;
+            loan.Modified_At = DateTime.Now;
           
 
             _authContext.Entry(loan).State = EntityState.Modified;
