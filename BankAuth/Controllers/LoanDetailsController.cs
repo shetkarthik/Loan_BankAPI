@@ -29,16 +29,15 @@ namespace BankAuth.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<LoanDetailsObj>> GetLoanDetails(int id)
         {
-            // Fetch the LoanDetails based on the provided ID
+           
             var loanDetails = await _context.LoanDetails.FirstOrDefaultAsync(ld => ld.LoanId == id);
+            var loan_accountnumber = loanDetails?.AccountNum;
             if (loanDetails == null)
             {
                 return NotFound();
             }
-            // var loanDate = loanDetails.Created_At.Truncate(TimeSpan.FromSeconds(1));
-
-            // Fetch the CustomerAccountInfo based on the associated AccountNum
-            var customerAccountInfo = await _context.AccInfo.FirstOrDefaultAsync(acc => acc.AccountNum == loanDetails.AccountNum);
+            
+            var customerAccountInfo = await _context.AccInfo.FirstOrDefaultAsync(acc => acc.AccountNum == loan_accountnumber);
             if (customerAccountInfo == null)
             {
                 return NotFound();

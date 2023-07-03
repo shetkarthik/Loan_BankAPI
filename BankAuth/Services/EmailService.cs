@@ -39,7 +39,14 @@ namespace BankAuth.Services
             //emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = message.Content };
 
             var bodyBuilder = new BodyBuilder();
-            bodyBuilder.TextBody = message.Content;
+
+            var htmlBody = new TextPart(MimeKit.Text.TextFormat.Html)
+            {
+                Text = message.Content
+            };
+            bodyBuilder.Attachments.Add(htmlBody);
+
+           // bodyBuilder.TextBody = message.Content;
 
             foreach (var attachment in message.Attachments)
             {

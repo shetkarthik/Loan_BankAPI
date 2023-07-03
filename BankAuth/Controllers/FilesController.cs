@@ -223,7 +223,7 @@ namespace BankAuth.Controllers
                         _emailService.SendEmail(text);
 
                     }
-                    
+
                 }
 
                

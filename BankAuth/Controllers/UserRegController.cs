@@ -69,16 +69,80 @@ namespace BankAuth.Controllers
             //user.AuthToken = generated_token;
             await _authContext.SaveChangesAsync();
 
+            var htmlContent = $@"
+     <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                background-color: #f2f2f2;
+            }}
+            
+            .container {{
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #ffffff;
+                border-radius: 5px;
+                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            }}
+            
+            .header {{
+                text-align: center;
+                margin-bottom: 20px;
+            }}
+            
+            .content {{
+               text-align:center
+                
+            }}
+            .otp{{
+            
+            font-size:25px;
+            font-weight:bold;
+            color:blue;
+            }}
+            
+            .remark
+            {{
+              color:grey;
+              font-style:italic;
+              font-size:13px;
+            }}
+            
+        </style>
+    </head>
+    <body>
+        <div class=""container"">
+            <h2 class=""header"">OTP for Authentication</h2>
+            <div class=""content"">
+               
+                <p>Your OTP for verification is: <span class=""otp"">{generated_token}</span></p>
+               <p class=""remark"">The otp is valid only for 2 minutes</p>
+            </div>
+        </div>
+    </body>
+    </html>";
 
-            var text = new Message(
+            var emailMessage = new Message(
                 new string[] { "shetkarthik89@gmail.com" },
                 "OTP for Authentication",
-              $"Hello {user.CustomerId}, {Environment.NewLine}  Your OTP for verification is  {generated_token}");
+                htmlContent);
+
+            _emailService.SendEmail(emailMessage);
+
+
+
+            //var text = new Message(
+            //    new string[] { "shetkarthik89@gmail.com" },
+            //    "OTP for Authentication",
+            //  $"Hello {user.CustomerId}, {Environment.NewLine}  Your OTP for verification is  {generated_token}");
 
 
 
 
-            _emailService.SendEmail(text);
+            //_emailService.SendEmail(text);
 
 
             return Ok(new
@@ -168,16 +232,7 @@ namespace BankAuth.Controllers
             {
                 return BadRequest(new { Message = customerId.ToString() });
             }
-            var accountnumber = CheckAccountNumberStrength(userObj.custObj.AccountNum);
-            if (!string.IsNullOrEmpty(accountnumber))
-            {
-                return BadRequest(new { Message = accountnumber.ToString() });
-            }
-            var contactnumber = CheckContactStrength(userObj.custObj.ContactNum);
-            if (!string.IsNullOrEmpty(contactnumber))
-            {
-                return BadRequest(new { Message = contactnumber.ToString() });
-            }
+          
 
 
           
@@ -313,6 +368,7 @@ namespace BankAuth.Controllers
 
                     return true;
                 }
+                
             }
             return false;
         }
@@ -339,31 +395,31 @@ namespace BankAuth.Controllers
 
             }
 
-            private string CheckAccountNumberStrength(string accountnum)
-            {
-                StringBuilder sb = new StringBuilder();
+            //private string CheckAccountNumberStrength(string accountnum)
+            //{
+            //    StringBuilder sb = new StringBuilder();
 
-                if (accountnum.Length < 12 || accountnum.Length > 12)
-                {
-                    sb.Append("AccountNumber must have 12 digits" + Environment.NewLine);
-                }
+            //    if (accountnum.Length < 12 || accountnum.Length > 12)
+            //    {
+            //        sb.Append("AccountNumber must have 12 digits" + Environment.NewLine);
+            //    }
 
-                return sb.ToString();
+            //    return sb.ToString();
 
-            }
+            //}
 
-            private string CheckContactStrength(string contactNum)
-            {
-                StringBuilder sb = new StringBuilder();
+            //private string CheckContactStrength(string contactNum)
+            //{
+            //    StringBuilder sb = new StringBuilder();
 
-                if (contactNum.Length < 10 || contactNum.Length > 10)
-                {
-                    sb.Append("Phonenumber must have 10 digits" + Environment.NewLine);
-                }
+            //    if (contactNum.Length < 10 || contactNum.Length > 10)
+            //    {
+            //        sb.Append("Phonenumber must have 10 digits" + Environment.NewLine);
+            //    }
 
-                return sb.ToString();
+            //    return sb.ToString();
 
-            }
+            //}
 
             private string CheckCustomerIdStrength(string customerid)
             {

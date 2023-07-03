@@ -119,6 +119,7 @@ namespace BankAuth.Controllers
                 EducationType = LoanObj.EducationType,
                 InstituteName = LoanObj.InstituteName,
                 LoanStatus = "Processing"
+               
             };
 
             _authContext.LoanDetails.Add(updatedLoanObj);
@@ -212,30 +213,9 @@ namespace BankAuth.Controllers
             catch (Exception ex)
             {
                 // Handle exception or log the error
-                return StatusCode(500, "An error occurred while updating the loan.");
+                return StatusCode(500, "An error occurred while updating the loan." + ex.Message);
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         [HttpGet("getLoanByAccountNum")]
@@ -290,10 +270,65 @@ namespace BankAuth.Controllers
 
             try
             {
-                var text = new Message(
-       new string[] { "shetkarthik89@gmail.com" }, "Updated Loan Application Status", $"Hello Sir/Madam, {Environment.NewLine} Your Loan has been reviewed and verified by our managers and results are as follows.{Environment.NewLine}" + $"Loan Id : {payload.Id} {Environment.NewLine}" + $"Loan Status : {payload.status} {Environment.NewLine}" + $"Reviewed Comments: {payload.comment} {Environment.NewLine}" + $"Please visit our branch for further details and queries");
+                var htmlContent = $@"
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                background-color: #f2f2f2;
+            }}
+            
+            .container {{
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #ffffff;
+                border-radius: 5px;
+                box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            }}
+            
+            .header {{
+                text-align: center;
+                margin-bottom: 20px;
+            }}
+            
+            .content {{
+                margin-bottom: 20px;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class=""container"">
+            <h2 class=""header"">Updated Loan Application Status</h2>
+            <div class=""content"">
+                <p>Dear Sir/Madam,</p>
+                <p>We are pleased to inform you that your loan application has been reviewed and verified by our managers.</p>
+                <p>Loan Details:</p>
+                <ul>
+                    <li>Loan ID: {payload.Id}</li>
+                    <li>Loan Status: {payload.status}</li>
+                </ul>
+                <p>Our team has provided the following comments regarding your application:</p>
+                <blockquote>{payload.comment}</blockquote>
+                <p>If you have any further questions or require additional information, please feel free to visit our branch or contact our customer support team.</p>
+                <p>Thank you for choosing our services.</p>
+                <p>Sincerely,</p>
+                <p>Alpha Bank</p>
+            </div>
+        </div>
+    </body>
+    </html>";
+
+                var emailMessage = new Message(
+                    new string[] { "shetkarthik89@gmail.com" },
+                    "Updated Loan Application Status",
+                    htmlContent);
+
                 await _authContext.SaveChangesAsync();
-                _emailService.SendEmail(text);
+                _emailService.SendEmail(emailMessage);
+
                 return NoContent();
             }
             catch (DbUpdateConcurrencyException)
