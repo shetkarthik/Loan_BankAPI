@@ -115,7 +115,7 @@ namespace BankAuth.Controllers
     </head>
     <body>
         <div class=""container"">
-            <h2 class=""header"">OTP for Authentication</h2>
+
             <div class=""content"">
                
                 <p>Your OTP for verification is: <span class=""otp"">{generated_token}</span></p>

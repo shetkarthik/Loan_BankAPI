@@ -208,19 +208,59 @@ namespace BankAuth.Controllers
                         total_file_string = string.Join(",", fileUrls);
                         total_file_names += string.Join(",", fileNames);
 
-                        var text = new Message(
-              new string[] { "shetkarthik89@gmail.com" },
-              "Loan Application",
-              "Hello, please find your the loan application here"
-          );
+
+
+                        var emailMessage = new Message(
+                            new string[] { "shetkarthik89@gmail.com" },
+                            "Loan Application",
+                            @"<html>
+        <head>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                }
+                .container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    background-color: #f9f9f9;
+                }
+                h1 {
+                    color: #333;
+                }
+                p {
+                    margin-bottom: 10px;
+                }
+                .signature {
+                    margin-top: 20px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class=""container"">
+
+                <p>Dear Applicant,</p>
+                <p>Thank you for submitting your loan application. We appreciate your interest in our services.</p>
+                <p>Please find attached the loan application documents for your reference.</p>
+                <p>If you have any further questions or require additional information, please feel free to contact us.</p>
+                <p>We will review your application and get back to you as soon as possible.</p>
+                <p>Thank you for choosing our bank for your financial needs.</p>
+                <p>Sincerely,</p>
+                <p>Alpha Bank</p>
+            </div>
+        </body>
+    </html>");
 
                         foreach (var email_fileName in fileNames)
                         {
                             var email_filePath = Path.Combine(_hostingEnvironment.ContentRootPath, "uploads", email_fileName);
-                            text.Attachments.Add(new Attachment(email_filePath, email_fileName));
+                            emailMessage.Attachments.Add(new Attachment(email_filePath, email_fileName));
                         }
 
-                        _emailService.SendEmail(text);
+                        _emailService.SendEmail(emailMessage);
+
 
                     }
 

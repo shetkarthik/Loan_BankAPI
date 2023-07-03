@@ -301,7 +301,7 @@ namespace BankAuth.Controllers
     </head>
     <body>
         <div class=""container"">
-            <h2 class=""header"">Updated Loan Application Status</h2>
+            
             <div class=""content"">
                 <p>Dear Sir/Madam,</p>
                 <p>We are pleased to inform you that your loan application has been reviewed and verified by our managers.</p>
